@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<style type="text/css">
+			.main-wrap {
+				width: 700px;
+				margin: 0px auto;
+				background-color: gainsboro;
+			}
+			
+			.main-wrap .head {
+				width: 700px;
+			}
+			
+			.main-wrap .head .head-item {
+				float: left;
+				text-align: center;
+				font-size: 30px;
+				width: 100px;
+			}
+			
+			.main-wrap .body .day-item {
+				width: 100px;
+				float: left;
+				height: 100px;
+				font-size: 20px;
+				line-height: 100px;
+				text-align: center;
+				border-radius: 100%;
+				background-color: gainsboro;
+			}
+			
+			.main-wrap .body .gap {
+				/*width:400px;*/
+				height: 2px;
+				float: left;
+			}
+			#header{
+				background-color: white;
+				font-size: 50px;
+			}
+			.head-btn{
+				background-color: rgba(255,0,0,0.7);
+				margin-left: 10px;
+				margin-right: 10px;
+				color: white;
+				display: inline-block;
+				height: 70px;
+				width: 70px;
+				text-align: center;
+				line-height: 70px;
+				border-radius: 100%;
+				cursor: pointer;
+				transition: all .3s;
+			}
+			.head-btn:hover{
+				background-color: rgba(255,0,0,1);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="main-wrap">
+			<div class="header" id="header">
+				<span id="head-date">2019</span> <span class="head-btn" id="head-next-btn">></span>_<span class="head-btn" id="head-pre-btn"><</span>
+			</div>
+			<div class="head">
+				<div class="head-item">
+					周日
+				</div>
+				<div class="head-item">
+					周一
+				</div>
+				<div class="head-item">
+					周二
+				</div>
+				<div class="head-item">
+					周三
+				</div>
+				<div class="head-item">
+					周四
+				</div>
+				<div class="head-item">
+					周五
+				</div>
+				<div class="head-item">
+					周六
+				</div>
+			</div>
+			<div class="body" id="body">
+				<div class="gap"></div>
+				<div class="day-item">1</div>
+				<div class="day-item">2</div>
+				<div class="day-item">3</div>
+				<div class="day-item">4</div>
+				<div class="day-item">5</div>
+				<div class="day-item">6</div>
+				<div class="day-item">7</div>
+				<div class="day-item">8</div>
+				<div class="day-item">9</div>
+				<div class="day-item">10</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var riliBody = document.getElementById('body');
+			var nowDisplayDate = {};
+			
+			//获取年份展示
+			var headDate= document.getElementById('head-date');
+			var headNextBtn = document.getElementById('head-next-btn');
+			var headPreBtn = document.getElementById('head-pre-btn');
+			var getDaysOfMonth = function(month, year) {
+				if(typeof month == 'string') {
+					month = parseInt(month);
+				}
+				if(typeof month == 'number') {
+					if(month < 1 || month > 12) {
+						return console.error('傻逼一年哪有' + month + '月');
+					}
+				} else {
+					return console.error('傻逼');
+				}
+				var days = 0;
+				year = year ? year : (new Date()).getFullYear();
+				if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+					days = 31;
+				}
+				if(month == 4 || month == 6 || month == 9 || month == 11) {
+					days = 30;
+				}
+				if(month == 2) {
+					days = year % 4 == 0 ? 29 : 28;
+				}
+				return days;
+			}
+			var getTheFirstDateOfThisMonthIsWhichDay = function(year, month) {
+				var dateStr = year + '-' + month + '-' + '01';
+				var firstDateOfThisMonth = new Date(dateStr);
+				var days = firstDateOfThisMonth.getDay();
+				return days;
+			}
+			//渲染，拼接字符串以及填充到页面中
+			var render = function(month,year) {
+				
+				var today = new Date();
+				var isThisMonth = false;
+				//判断是否为本月
+				if(month == today.getMonth()+1 && year == today.getFullYear()){
+					isThisMonth = true;
+				}
+				
+				var dayCount = getDaysOfMonth(month, year);
+				var firstDate = getTheFirstDateOfThisMonthIsWhichDay(year, month);
+				var width = 0;
+				var str = '';
+				var gap = '<div class="gap" style="width:${%width%}px;"></div>';
+				var tmp = '<div class="day-item" style="${%style%}">${%riqi%}号</div>';
+
+				if(firstDate == 7) {
+					width = 0;
+				} else {
+					width = firstDate * 100;
+				}
+				str += gap.replace('${%width%}', width);
+				for(var i = 0; i < dayCount; i++) {
+					if(isThisMonth && i+1 == today.getDate()){
+						str += tmp.replace('${%riqi%}', i + 1).replace('${%style%}',"background-color:red;color:white;");
+					}else{
+						str += tmp.replace('${%riqi%}', i + 1);
+					}
+					
+				}
+				headDate.innerHTML = year + '-' + (month > 9 ? month : '0'+month);
+				riliBody.innerHTML = str;
+			}
+
+			var init = function(date) {
+				nowDisplayDate = date;
+
+				var year = date.getFullYear();
+				var month = date.getMonth()+1;
+                
+                render(month,year);
+			}
+			init(new Date());
+			var goNextMonth = function() {
+				var displayDate = {
+					year: nowDisplayDate.getFullYear(),
+					month: nowDisplayDate.getMonth(),
+					date: nowDisplayDate.getDate()
+				}
+				if(displayDate.month >= 11){
+					displayDate.month = 0;
+					displayDate.year ++;
+				}else{
+					displayDate.month++;
+				}
+				var nextMonth = displayDate.year + '-' + (displayDate.month + 1 ) + '-01';
+				var nextDate = new Date(nextMonth);
+				init(nextDate);
+			}
+			var goPreMonth = function(){
+				var displayDate = {
+					year: nowDisplayDate.getFullYear(),
+					month: nowDisplayDate.getMonth(),
+					date: nowDisplayDate.getDate()
+				}
+				
+				if(displayDate.month == 0){
+					displayDate.month = 11;
+					displayDate.year --;
+				}else{
+					displayDate.month--;
+				}
+				var nextMonth = displayDate.year + '-' + (displayDate.month + 1 ) + '-01';
+				var nextDate = new Date(nextMonth);
+				init(nextDate);
+			}
+			
+			headNextBtn.addEventListener('click',function(){
+				goNextMonth();
+			})
+			headPreBtn.addEventListener('click',function(){
+				goPreMonth();
+			})
+			
+			var backToThisMonth = function(){
+				var now = new Date();
+				init(now);
+			}
+		</script>
+	</body>
+
+</html>
